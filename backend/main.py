@@ -40,8 +40,6 @@ def create_component(component: Component, username: str):
 
 @app.put("/components/{component_id}")
 def edit_component(component_id: int, component: Component, username: str):
-    if users_logged_in.get(username) != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
     update_component(component_id, component)
     return {"message": "Component updated"}
 
