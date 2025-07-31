@@ -11,10 +11,15 @@ const App = () => {
     setUsername(uname)
     setRole(userRole)
   }
+  
+  const handleLogout = () => {
+    setUsername(null)
+    setRole(null)
+  }
 
   if (!username) return <Login onLogin={onLogin} />
-  if (role === 'user') return <DashboardUser username={username} />
-  if (role === 'admin') return <DashboardAdmin username={username} />
+  if (role === 'user') return <DashboardUser username={username} onLogout={handleLogout}/>
+  if (role === 'admin') return <DashboardAdmin username={username} onLogout={handleLogout}/>
 }
 
 export default App

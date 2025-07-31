@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import API from '../api'
 
-const DashboardUser = ({ username }) => {
+const DashboardUser = ({ username, onLogout}) => {
   const [components, setComponents] = useState([])
   const [amounts, setAmounts] = useState({}) // jumlah yang ingin diambil per ID
 
@@ -52,6 +52,7 @@ const DashboardUser = ({ username }) => {
 
   return (
     <div>
+      <button onClick={onLogout} style={{ float: 'right' }}>Log Out</button>
       <h2>Component Inventory (User)</h2>
       <table border="1" cellPadding="8">
         <thead>

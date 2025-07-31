@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import API from '../api'
 
-const DashboardAdmin = ({ username }) => {
+const DashboardAdmin = ({ username, onLogout }) => {
   const [components, setComponents] = useState([])
   const [form, setForm] = useState({ name: '', quantity: '', description: '' })
   const [editId, setEditId] = useState(null)
@@ -56,6 +56,7 @@ const DashboardAdmin = ({ username }) => {
 
   return (
     <div>
+      <button onClick={onLogout} style={{ float: 'right' }}>Log Out</button>
       <h2>Component Inventory (Admin)</h2>
 
       <table border="1" cellPadding="8" cellSpacing="0">
