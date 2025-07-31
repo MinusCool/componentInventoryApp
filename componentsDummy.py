@@ -42,7 +42,7 @@ components = [
     ("Breadboard Mini", 20, "170 points"),
 ]
 
-conn = sqlite3.connect("backend/inventory.db")
+conn = sqlite3.connect("backend/database/inventory.db")
 cursor = conn.cursor()
 
 for name, qty, desc in components:
