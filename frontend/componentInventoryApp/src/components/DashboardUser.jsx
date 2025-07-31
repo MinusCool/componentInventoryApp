@@ -3,7 +3,7 @@ import API from '../api'
 
 const DashboardUser = ({ username, onLogout}) => {
   const [components, setComponents] = useState([])
-  const [amounts, setAmounts] = useState({}) // jumlah yang ingin diambil per ID
+  const [amounts, setAmounts] = useState({})
 
   const loadComponents = () => {
     API.get(`/components`, { params: { username } })
@@ -74,11 +74,16 @@ const DashboardUser = ({ username, onLogout}) => {
                   <input
                     type="number"
                     min="0"
+                    max={comp.quantity}
                     value={amounts[comp.id] || ''}
-                    onChange={e => setAmounts(prev => ({
-                      ...prev,
-                      [comp.id]: e.target.value
-                    }))}
+                    onChange={e => {
+                      let value = e.target.value
+                      if (parseInt(value)>comp.quantity) value = comp.quantity
+                      setAmounts(prev => ({
+                        ...prev,
+                        [comp.id]: value
+                      }))
+                    }}
                     style={{ width: '60px' }}
                     placeholder="Qty"
                   />
