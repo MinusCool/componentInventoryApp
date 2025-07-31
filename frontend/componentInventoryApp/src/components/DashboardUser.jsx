@@ -51,52 +51,69 @@ const DashboardUser = ({ username, onLogout}) => {
   }
 
   return (
-    <div>
-      <button onClick={onLogout} style={{ float: 'right' }}>Log Out</button>
-      <h2>Component Inventory (User)</h2>
-      <table border="1" cellPadding="8">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Qty</th>
-            <th>Description</th>
-            <th>Take Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {components.map(comp => (
-            <tr key={comp.id}>
-              <td>{comp.name}</td>
-              <td>{comp.quantity}</td>
-              <td>{comp.description}</td>
-              <td>
-                {comp.quantity > 0 ? (
-                  <input
-                    type="number"
-                    min="0"
-                    max={comp.quantity}
-                    value={amounts[comp.id] || ''}
-                    onChange={e => {
-                      let value = e.target.value
-                      if (parseInt(value)>comp.quantity) value = comp.quantity
-                      setAmounts(prev => ({
-                        ...prev,
-                        [comp.id]: value
-                      }))
-                    }}
-                    style={{ width: '60px' }}
-                    placeholder="Qty"
-                  />
-                ) : (
-                  <span style={{ color: 'red' }}>Out of stock</span>
-                )}
-              </td>
+    <div className="p-6 max-w-5xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Component Inventory (User)</h2>
+        <button
+          onClick={onLogout}
+          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+        >
+          Log Out
+        </button>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="min-w-full border border-gray-300 bg-white shadow rounded">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-4 py-2 border-b">Name</th>
+              <th className="px-4 py-2 border-b">Qty</th>
+              <th className="px-4 py-2 border-b">Description</th>
+              <th className="px-4 py-2 border-b">Take Amount</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <br />
-      <button onClick={handleTakeAll}>Take</button>
+          </thead>
+          <tbody>
+            {components.map(comp => (
+              <tr key={comp.id} className="text-center">
+                <td className="px-4 py-2 border-b">{comp.name}</td>
+                <td className="px-4 py-2 border-b">{comp.quantity}</td>
+                <td className="px-4 py-2 border-b">{comp.description}</td>
+                <td className="px-4 py-2 border-b">
+                  {comp.quantity > 0 ? (
+                    <input
+                      type="number"
+                      min="0"
+                      max={comp.quantity}
+                      value={amounts[comp.id] || ''}
+                      onChange={e => {
+                        let value = e.target.value
+                        if (parseInt(value) > comp.quantity) value = comp.quantity
+                        setAmounts(prev => ({
+                          ...prev,
+                          [comp.id]: value
+                        }))
+                      }}
+                      className="border rounded px-2 py-1 w-20 text-center"
+                      placeholder="Qty"
+                    />
+                  ) : (
+                    <span className="text-red-500 font-semibold">Out of stock</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="text-center mt-6">
+        <button
+          onClick={handleTakeAll}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded"
+        >
+          Take
+        </button>
+      </div>
     </div>
   )
 }
