@@ -11,7 +11,7 @@ const Login = ({ onLogin }) => {
       const res = await API.post('/login', { username, password })
       onLogin(username, res.data.role)
     } catch (err) {
-      alert(err.response?.data?.detail || 'Login failed')
+      alert(err.response?.data?.detail || 'Internal Server Error')
     }
   }
 
