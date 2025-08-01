@@ -6,12 +6,15 @@ const DashboardUser = ({ username, onLogout}) => {
   const [amounts, setAmounts] = useState({})
   const [search, setSearch] = useState('')
   const [searchInput, setSearchInput] = useState('')
+  const [error, setError] = useState('')
+  const [showError, setShowError] = useState(false)
 
 
   const loadComponents = () => {
     API.get(`/components`, { params: { username } })
       .then(res => setComponents(res.data))
-      .catch(() => alert("Failed to fetch components"))
+      .catch(() => setError("Failed to fetch components"))
+      setShowError(true)
   }
 
   useEffect(() => {
@@ -25,7 +28,8 @@ const DashboardUser = ({ username, onLogout}) => {
     })
 
     if (takeList.length === 0) {
-      alert("No valid components selected to take.")
+      setError("No valid components selected to take.")
+      setShowError(true)
       return
     }
 
@@ -49,7 +53,8 @@ const DashboardUser = ({ username, onLogout}) => {
         setAmounts({})
       })
       .catch(err => {
-        alert(err.response?.data?.detail || "Failed to update components.")
+        setError(err.response?.data?.detail || "Failed to update components.")
+        setShowError(true)
       })
   }
 
@@ -153,6 +158,22 @@ const DashboardUser = ({ username, onLogout}) => {
           Take
         </button>
       </div>
+
+      {showError && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm relative flex flex-col items-center">
+            <h3 className="text-lg font-semibold mb-2 text-red-600">Error</h3>
+            <p className="text-gray-700 mb-6">{error}</p>
+            <button
+              onClick={() => setShowError(false)}
+              className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-6 rounded mt-4"
+              aria-label="Close"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
