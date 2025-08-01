@@ -7,6 +7,8 @@ const DashboardAdmin = ({ username, onLogout }) => {
   const [editId, setEditId] = useState(null)
   const [search, setSearch] = useState('')
   const [searchInput, setSearchInput] = useState('')
+  const [showUpdate, setShowUpdate] = useState(false)
+  const [showAdd, setShowAdd] = useState(false)
 
   const loadComponents = () => {
     API.get('/components', { params: { username } })
@@ -32,8 +34,7 @@ const DashboardAdmin = ({ username, onLogout }) => {
     if (!form.name || !form.quantity) return alert("Name and quantity are required.")
     API.put(`/components/${editId}`, form, { params: { username } })
       .then(() => {
-        setForm({ name: '', quantity: '', description: '' })
-        setEditId(null)
+        closeUpdate()
         loadComponents()
       })
       .catch(() => alert("Failed to update component"))
@@ -49,6 +50,13 @@ const DashboardAdmin = ({ username, onLogout }) => {
   const startEdit = (comp) => {
     setForm({ name: comp.name, quantity: comp.quantity, description: comp.description })
     setEditId(comp.id)
+    setShowUpdate(true)
+  }
+
+  const closeUpdate = () =>{
+    setShowUpdate(false)
+    setEditId(null)
+    setForm({ name: '', quantity: '', description: '' })
   }
 
   const filteredComponents = components.filter(comp =>
@@ -60,7 +68,7 @@ const DashboardAdmin = ({ username, onLogout }) => {
     e.preventDefault()
     setSearch(searchInput)
   }
-
+  
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
@@ -81,6 +89,12 @@ const DashboardAdmin = ({ username, onLogout }) => {
               Search
             </button>
           </form>
+          <button
+            onClick={() => setShowAdd(true)}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 ronded font-semibold"
+          >
+            Add Component
+          </button>
           <button
             onClick={onLogout}
             className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded font-semibold ml-2"
@@ -109,7 +123,13 @@ const DashboardAdmin = ({ username, onLogout }) => {
               filteredComponents.map(comp => (
                 <tr key={comp.id} className="text-center hover:bg-gray-50 transition">
                   <td className="px-4 py-2 border-b">{comp.name}</td>
-                  <td className="px-4 py-2 border-b">{comp.quantity}</td>
+                  <td className="px-4 py-2 border-b">
+                    {comp.quantity === 0 ?(
+                    <span className="text-red-500">Out of Stock</span>
+                  ):(
+                    comp.quantity
+                  )}
+                  </td>
                   <td className="px-4 py-2 border-b">{comp.description}</td>
                   <td className="px-4 py-2 border-b space-x-2">
                     <button
@@ -132,45 +152,97 @@ const DashboardAdmin = ({ username, onLogout }) => {
         </table>
       </div>
 
-      <div className="mt-8">
-        <h3 className="text-xl font-semibold mb-4 text-gray-800">{editId ? 'Edit Component' : 'Add Component'}</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-          <input
-            placeholder="Name"
-            value={form.name}
-            onChange={e => setForm({ ...form, name: e.target.value })}
-            className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          <input
-            placeholder="Quantity"
-            type="number"
-            value={form.quantity}
-            onChange={e => setForm({ ...form, quantity: e.target.value })}
-            className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          <input
-            placeholder="Description"
-            value={form.description}
-            onChange={e => setForm({ ...form, description: e.target.value })}
-            className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
+      {showUpdate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
+            <button
+              onClick={closeUpdate}
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl font-bold"
+              aria-label="Close"
+            >
+              &times;
+            </button>
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">Edit Component</h3>
+            <div className="grid grid-cols-1 gap-4 mb-4">
+              <input
+                placeholder="Name"
+                value={form.name}
+                onChange={e => setForm({ ...form, name: e.target.value })}
+                className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+              <input
+                placeholder="Quantity"
+                type="number"
+                min="0"
+                value={form.quantity}
+                onChange={e => setForm({ ...form, quantity: e.target.value })}
+                className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+              <input
+                placeholder="Description"
+                value={form.description}
+                onChange={e => setForm({ ...form, description: e.target.value })}
+                className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+            <button
+              onClick={handleUpdate}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded w-full"
+            >
+              Update
+            </button>
+          </div>
         </div>
-        {editId ? (
-          <button
-            onClick={handleUpdate}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded"
-          >
-            Update
-          </button>
-        ) : (
-          <button
-            onClick={handleAdd}
-            className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded"
-          >
-            Add
-          </button>
-        )}
+      )}
+      
+      {showAdd && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+    <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
+      <button
+        onClick={() => {
+          setShowAdd(false)
+          setForm({ name: '', quantity: '', description: '' })
+        }}
+        className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl font-bold"
+        aria-label="Close"
+      >
+        &times;
+      </button>
+      <h3 className="text-xl font-semibold mb-4 text-gray-800">Add Component</h3>
+      <div className="grid grid-cols-1 gap-4 mb-4">
+        <input
+          placeholder="Name"
+          value={form.name}
+          onChange={e => setForm({ ...form, name: e.target.value })}
+          className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <input
+          placeholder="Quantity"
+          type="number"
+          min="0"
+          value={form.quantity}
+          onChange={e => setForm({ ...form, quantity: e.target.value })}
+          className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <input
+          placeholder="Description"
+          value={form.description}
+          onChange={e => setForm({ ...form, description: e.target.value })}
+          className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
       </div>
+      <button
+        onClick={() => {
+          handleAdd()
+          setShowAdd(false)
+        }}
+        className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded w-full"
+      >
+        Add
+      </button>
+    </div>
+  </div>
+)}
     </div>
   )
 }
