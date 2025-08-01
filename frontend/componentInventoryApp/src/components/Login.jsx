@@ -4,14 +4,22 @@ import API from '../api'
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [showError, setShowError] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    try {
-      const res = await API.post('/login', { username, password })
-      onLogin(username, res.data.role)
-    } catch (err) {
-      alert(err.response?.data?.detail || 'Internal Server Error')
+    if (!username || !password) {
+      setError('Username and password are required.')
+      setShowError(true)
+    } else {
+      try {
+        const res = await API.post('/login', { username, password })
+        onLogin(username, res.data.role)
+      } catch (err) {
+        setError(err.response?.data?.detail || 'Internal Server Error')
+        setShowError(true)
+      }
     }
   }
 
@@ -38,6 +46,22 @@ const Login = ({ onLogin }) => {
           >Login
         </button>
       </form>
+
+      {showError && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm relative flex flex-col items-center">
+            <h3 className="text-lg font-semibold mb-2 text-red-600">Login Error</h3>
+            <p className="text-gray-700 mb-6">{error}</p>
+            <button
+              onClick={() => setShowError(false)}
+              className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-6 rounded mt-4"
+              aria-label="Close"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
