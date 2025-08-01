@@ -14,7 +14,6 @@ const DashboardUser = ({ username, onLogout}) => {
     API.get(`/components`, { params: { username } })
       .then(res => setComponents(res.data))
       .catch(() => setError("Failed to fetch components"))
-      setShowError(true)
   }
 
   useEffect(() => {

@@ -9,11 +9,14 @@ const DashboardAdmin = ({ username, onLogout }) => {
   const [searchInput, setSearchInput] = useState('')
   const [showUpdate, setShowUpdate] = useState(false)
   const [showAdd, setShowAdd] = useState(false)
+  const [error, setError] = useState('')
+  const [showError, setShowError] = useState(false)
+  
 
   const loadComponents = () => {
     API.get('/components', { params: { username } })
       .then(res => setComponents(res.data))
-      .catch(() => alert("Failed to load components"))
+      .catch(() => setError("Failed to load components"))
   }
 
   useEffect(() => {
@@ -21,30 +24,41 @@ const DashboardAdmin = ({ username, onLogout }) => {
   }, [])
 
   const handleAdd = () => {
-    if (!form.name || !form.quantity) return alert("Name and quantity are required.")
+    if (!form.name || !form.quantity) {
+      //setError("Name and quantity are required.")
+      //setShowError(true)
+      return
+    }
     API.post('/components', form, { params: { username } })
       .then(() => {
         setForm({ name: '', quantity: '', description: '' })
         loadComponents()
       })
-      .catch(() => alert("Failed to add component"))
+      .catch(() => setError("Failed to add component"))
+      //setShowError(true)
   }
 
   const handleUpdate = () => {
-    if (!form.name || !form.quantity) return alert("Name and quantity are required.")
+    if (!form.name || !form.quantity) {
+      //setError("Name and quantity are required.")
+      //setShowError(true)
+      return
+    }
     API.put(`/components/${editId}`, form, { params: { username } })
       .then(() => {
         closeUpdate()
         loadComponents()
       })
-      .catch(() => alert("Failed to update component"))
+      .catch(() => setError("Failed to update component"))
+      //setShowError(true)
   }
 
   const handleDelete = (id) => {
     if (!confirm("Are you sure you want to delete this component?")) return
     API.delete(`/components/${id}`, { params: { username } })
       .then(loadComponents)
-      .catch(() => alert("Failed to delete component"))
+      .catch(() => setError("Failed to delete component"))
+      //setShowError(true)
   }
 
   const startEdit = (comp) => {
@@ -196,53 +210,69 @@ const DashboardAdmin = ({ username, onLogout }) => {
       )}
       
       {showAdd && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-    <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
-      <button
-        onClick={() => {
-          setShowAdd(false)
-          setForm({ name: '', quantity: '', description: '' })
-        }}
-        className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl font-bold"
-        aria-label="Close"
-      >
-        &times;
-      </button>
-      <h3 className="text-xl font-semibold mb-4 text-gray-800">Add Component</h3>
-      <div className="grid grid-cols-1 gap-4 mb-4">
-        <input
-          placeholder="Name"
-          value={form.name}
-          onChange={e => setForm({ ...form, name: e.target.value })}
-          className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        <input
-          placeholder="Quantity"
-          type="number"
-          min="0"
-          value={form.quantity}
-          onChange={e => setForm({ ...form, quantity: e.target.value })}
-          className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        <input
-          placeholder="Description"
-          value={form.description}
-          onChange={e => setForm({ ...form, description: e.target.value })}
-          className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-      </div>
-      <button
-        onClick={() => {
-          handleAdd()
-          setShowAdd(false)
-        }}
-        className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded w-full"
-      >
-        Add
-      </button>
-    </div>
-  </div>
-)}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
+            <button
+              onClick={() => {
+                setShowAdd(false)
+                setForm({ name: '', quantity: '', description: '' })
+              }}
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl font-bold"
+              aria-label="Close"
+            >
+              &times;
+            </button>
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">Add Component</h3>
+            <div className="grid grid-cols-1 gap-4 mb-4">
+              <input
+                placeholder="Name"
+                value={form.name}
+                onChange={e => setForm({ ...form, name: e.target.value })}
+                className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+              <input
+                placeholder="Quantity"
+                type="number"
+                min="0"
+                value={form.quantity}
+                onChange={e => setForm({ ...form, quantity: e.target.value })}
+                className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+              <input
+                placeholder="Description"
+                value={form.description}
+                onChange={e => setForm({ ...form, description: e.target.value })}
+                className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+            <button
+              onClick={() => {
+                handleAdd()
+                setShowAdd(false)
+              }}
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded w-full"
+            >
+              Add
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showError && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm relative flex flex-col items-center">
+            <h3 className="text-lg font-semibold mb-2 text-red-600">Error</h3>
+            <p className="text-gray-700 mb-6">{error}</p>
+            <button
+              onClick={() => setShowError(false)}
+              className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-6 rounded mt-4"
+              aria-label="Close"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
