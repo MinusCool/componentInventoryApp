@@ -49,3 +49,7 @@ def remove_component(component_id: int, username: str):
         raise HTTPException(status_code=403, detail="Admin access required")
     delete_component(component_id)
     return {"message": "Component deleted"}
+
+@app.get("/")
+def root():
+    return {"message": "Component Inventory App"}

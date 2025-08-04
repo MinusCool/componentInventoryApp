@@ -11,7 +11,8 @@ const DashboardAdmin = ({ username, onLogout }) => {
   const [showAdd, setShowAdd] = useState(false)
   const [error, setError] = useState('')
   const [showError, setShowError] = useState(false)
-  
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [deleteId, setDeleteId] = useState(null)
 
   const loadComponents = () => {
     API.get('/components', { params: { username } })
@@ -50,14 +51,6 @@ const DashboardAdmin = ({ username, onLogout }) => {
         loadComponents()
       })
       .catch(() => setError("Failed to update component"))
-      //setShowError(true)
-  }
-
-  const handleDelete = (id) => {
-    if (!confirm("Are you sure you want to delete this component?")) return
-    API.delete(`/components/${id}`, { params: { username } })
-      .then(loadComponents)
-      .catch(() => setError("Failed to delete component"))
       //setShowError(true)
   }
 
@@ -153,7 +146,10 @@ const DashboardAdmin = ({ username, onLogout }) => {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(comp.id)}
+                      onClick={() => {
+                        setDeleteId(comp.id)
+                        setShowConfirm(true)
+                      }}
                       className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded font-semibold"
                     >
                       Delete
@@ -273,6 +269,45 @@ const DashboardAdmin = ({ username, onLogout }) => {
           </div>
         </div>
       )}
+
+      {showConfirm && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+        <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm relative flex flex-col items-center">
+          <h3 className="text-lg font-semibold mb-2 text-red-600">Confirm Delete</h3>
+          <p className="text-gray-700 mb-6">Are you sure you want to delete this component?</p>
+          <div className="flex gap-4">
+            <button
+              onClick={() => {
+                API.delete(`/components/${deleteId}`, { params: { username } })
+                  .then(() => {
+                    setShowConfirm(false)
+                    setDeleteId(null)
+                    loadComponents()
+                  })
+                  .catch(() => {
+                    setError("Failed to delete component")
+                    setShowError(true)
+                    setShowConfirm(false)
+                    setDeleteId(null)
+                  })
+              }}
+              className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded"
+            >
+              Delete
+            </button>
+            <button
+              onClick={() => {
+                setShowConfirm(false)
+                setDeleteId(null)
+              }}
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   )
 }

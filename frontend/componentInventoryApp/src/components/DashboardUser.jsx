@@ -8,6 +8,8 @@ const DashboardUser = ({ username, onLogout}) => {
   const [searchInput, setSearchInput] = useState('')
   const [error, setError] = useState('')
   const [showError, setShowError] = useState(false)
+  const [success, setSuccess] = useState('')
+  const [showSuccess, setShowSuccess] = useState(false)
 
 
   const loadComponents = () => {
@@ -47,7 +49,8 @@ const DashboardUser = ({ username, onLogout}) => {
       })
     )
       .then(() => {
-        alert("Components taken successfully.")
+        setSuccess("Components taken successfully.")
+        setShowSuccess(true)
         loadComponents()
         setAmounts({})
       })
@@ -165,6 +168,22 @@ const DashboardUser = ({ username, onLogout}) => {
             <p className="text-gray-700 mb-6">{error}</p>
             <button
               onClick={() => setShowError(false)}
+              className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-6 rounded mt-4"
+              aria-label="Close"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showSuccess && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm relative flex flex-col items-center">
+            <h3 className="text-lg font-semibold mb-2 text-green-600">Success</h3>
+            <p className="text-gray-700 mb-6">{success}</p>
+            <button
+              onClick={() => setShowSuccess(false)}
               className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-6 rounded mt-4"
               aria-label="Close"
             >
