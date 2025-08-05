@@ -16,7 +16,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-users_logged_in = {}  # token-less session (sederhana)
+users_logged_in = {}
 
 @app.post("/login")
 def login(request: LoginRequest):
@@ -53,3 +53,8 @@ def remove_component(component_id: int, username: str):
 @app.get("/")
 def root():
     return {"message": "Component Inventory App"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000, reload=False)

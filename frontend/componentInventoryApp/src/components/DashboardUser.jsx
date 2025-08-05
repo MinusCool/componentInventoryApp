@@ -155,7 +155,7 @@ const DashboardUser = ({ username, onLogout}) => {
       <div className="text-center mt-6">
         <button
           onClick={handleTakeAll}
-          className="bg-green-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded"
+          className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded"
         >
           Take
         </button>
