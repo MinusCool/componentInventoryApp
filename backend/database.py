@@ -1,7 +1,15 @@
+import os
+import sys
 import sqlite3
 
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
+
 def get_connection():
-    conn = sqlite3.connect("database/inventory.db")
+    db_path = resource_path("database/inventory.db")
+    conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
 
