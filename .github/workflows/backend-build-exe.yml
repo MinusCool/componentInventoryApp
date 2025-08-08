@@ -1,5 +1,6 @@
 name: Build and Release Backend EXE
-
+permissions:
+  contents: write
 on:
   push:
     tags:
