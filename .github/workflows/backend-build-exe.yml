@@ -28,7 +28,7 @@ jobs:
     - name: Build EXE with PyInstaller
       run: |
         cd backend
-        pyinstaller inventory.spec
+        pyinstaller setup.spec
 
     - name: Upload EXE to GitHub Releases
       uses: softprops/action-gh-release@v1
